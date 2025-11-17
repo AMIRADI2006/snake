@@ -90,6 +90,7 @@ body{}
 }
 
 #score {
+    color: #BDBDBD;
     font-family: 'vazir';
     font-size: 18px;
 }

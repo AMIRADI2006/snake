@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>***مار بازی***</title>
+
+    <link rel="stylesheet" href="src/styles/app.css">
+
+</head>
+
+<body>
+    <div id="div1">
+        <div id="div2">
+            <div class="div3"><div class="div4"></div></div>
+            <div class="div3"><div class="div4"></div></div>
+        </div>
+    </div>
+
+    <button class="btnrun" onclick="startMove()">شروع</button>
+
+    <script>
+        var timer;
+        var dir = "right";
+
+        function startMove() {
+            clearInterval(timer);
+            dir = "right";
+            timer = setInterval(moveDiv, 100);
+        }
+
+        function moveDiv() {
+            var div2 = document.getElementById("div2");
+            var div1 = document.getElementById("div1");
+
+            var snake_left = parseInt(getComputedStyle(div2).left);
+            var snake_top = parseInt(getComputedStyle(div2).top);
+            var canvas_w = parseInt(getComputedStyle(div1).width);
+            var canvas_h = parseInt(getComputedStyle(div1).height);
+            var snake_w = parseInt(getComputedStyle(div2).width);
+
+            if (dir == "right") {
+                if (snake_left < canvas_w - snake_w) {
+                    div2.style.left = (snake_left + 5) + "px";
+                } else {
+                    dir = "down";
+                }
+            } else if (dir == "down") {
+                if (snake_top < canvas_h - snake_w) {
+                    div2.style.top = (snake_top + 5) + "px";
+                } else {
+                    dir = "left";
+                }
+            } else if (dir == "left") {
+                if (snake_left > 0) {
+                    div2.style.left = (snake_left - 5) + "px";
+                } else {
+                    dir = "up";
+                }
+            } else if (dir == "up") {
+                if (snake_top > 0) {
+                    div2.style.top = (snake_top - 5) + "px";
+                } else {
+                    clearInterval(timer);
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>
