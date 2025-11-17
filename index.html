@@ -1,23 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake</title>
+
+    <style>
+        #div1 {
+            margin: 5rem auto;
+            background-color: rgb(116, 214, 223);
+            width: 500px;
+            height: 500px;
+            position: relative;
+        }
+
+        #div2 {
+            background-color: red;
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <!-- univercity -->
+    
+
+    <script>
+    
+        var moveint = "";
+
+        function btnMove_onclick() {
+            moveint = setInterval(move, 200);
+        }
+
+        function move() {
+            var snake_left = parseInt(document.getElementById("div2").style.left);
+            var snake_w = parseInt(document.getElementById("div2").style.width);
+            var canvas_w = parseInt(document.getElementById("div1").style.width);
+
+            if (snake_left < canvas_w - snake_w)
+                document.getElementById("div2").style.left = parseInt(document.getElementById("div2").style.left) + 10 + "px";
+            else
+                clearInterval(moveint);
 
 
+        }
 
+    </script>
 
-<script>
-    var a=5,b;
+    <div id="div1">
+        <div id="div2"></div>
+    </div>
 
+    <input id="btnMove" type="button" value="Move" onclick="btnMove_onclick">
 
-    alert("heloo world")
+    
+</body>
 
-    if(a==5){
-        alert("ok")
-    }
-    else{
-        alert("no")
-    }
-
-
-    document.write("Amir Mohammad <hr>")
-</script>
-
-<input type="text" value="OK" id="t1">
-<input type="button" name="b1" value="ok" onclick="alert(document.getElementById('t1').value);">
+</html>

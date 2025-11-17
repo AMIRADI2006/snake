@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>حرکت دور کامل مربع</title>
+    <style>
+        #div1 {
+            margin: 5rem auto;
+            background-color: rgb(116, 214, 223);
+            width: 500px;
+            height: 500px;
+            position: relative;
+        }
+
+        #div2 {
+            background-color: red;
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+        }
+
+        #btnMove {
+            display: block;
+            margin: 2rem auto;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="div1">
+        <div id="div2"></div>
+    </div>
+
+    <input id="btnMove" type="button" value="حرکت کن" onclick="btnMove_onclick()">
+
+    <script>
+        var moveint = "";
+        var direction = "right";
+
+        function btnMove_onclick() {
+            clearInterval(moveint);
+            direction = "right"; // شروع از راست
+            moveint = setInterval(move, 10); // سرعت حرکت
+        }
+
+        function move() {
+            var div2 = document.getElementById("div2");
+            var div1 = document.getElementById("div1");
+
+            var left = parseInt(getComputedStyle(div2).left);
+            var top = parseInt(getComputedStyle(div2).top);
+            var boxWidth = parseInt(getComputedStyle(div1).width);
+            var boxHeight = parseInt(getComputedStyle(div1).height);
+            var div2Size = parseInt(getComputedStyle(div2).width);
+
+            switch (direction) {
+                case "right":
+                    if (left < boxWidth - div2Size) {
+                        div2.style.left = (left + 5) + "px";
+                    } else {
+                        direction = "down";
+                    }
+                    break;
+
+                case "down":
+                    if (top < boxHeight - div2Size) {
+                        div2.style.top = (top + 5) + "px";
+                    } else {
+                        direction = "left";
+                    }
+                    break;
+
+                case "left":
+                    if (left > 0) {
+                        div2.style.left = (left - 5) + "px";
+                    } else {
+                        direction = "up";
+                    }
+                    break;
+
+                case "up":
+                    if (top > 0) {
+                        div2.style.top = (top - 5) + "px";
+                    } else {
+                        clearInterval(moveint); // پایان حرکت
+                    }
+                    break;
+            }
+        }
+    </script>
+
+</body>
+</html>

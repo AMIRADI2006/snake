@@ -1,0 +1,95 @@
+@import url(font.css);
+
+body{}
+
+#div1 {
+    width: 500px;
+    height: 500px;
+    background-color: #B2EBF2;
+    position: relative;
+    margin: 50px auto;
+    border: solid 2px #03A9F4;
+    border-radius: 8px;
+}
+
+#div2 {
+    width: 30px;
+    height: 30px;
+    background-color: #FF9800;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    border-radius: 8px;
+    border: 1px solid #FFFF00;
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    z-index: 5;
+}
+
+.btnrun {
+    font-family: 'vazir';
+    display: block;
+    margin: 0 auto;
+    background-color: #2196F3;
+    color: white;
+    font-size: 18px;
+    padding: 8px 35px;
+    border-radius: 8px;
+    border: 1px solid #03A9F4;
+    cursor: pointer;
+}
+
+.btnrun:hover {
+    background-color: #00BCD4;
+}
+
+
+.div3 {
+    width: 10px;
+    height: 10px;
+    background-color: black;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.div4 {
+    width: 5px;
+    height: 5px;
+    background-color: white;
+    border-radius: 8px;
+}
+
+
+
+#food {
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    position: absolute;
+    border-radius: 10px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.food-barg{
+    width: 10px;
+    height: 10px;
+    background-color: #9CCC65;
+    border-top-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    margin-left: 45%;
+    position: relative;
+    top: -5px;
+}
+
+.wrapper {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#score {
+    font-family: 'vazir';
+    font-size: 18px;
+}

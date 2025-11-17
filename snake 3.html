@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>***مار بازی***</title>
+
+    <link rel="stylesheet" href="src/styles/app.css">
+
+</head>
+
+<body>
+      <div id="div1">
+        <div id="div2">
+            <div class="div3">
+                <div class="div4"></div>
+            </div>
+            <div class="div3">
+                <div class="div4"></div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btnrun" onclick="startMove()">شروع</button>
+
+    <script>
+        var timer;
+        var dir = "";
+
+        document.onkeydown = function(e) {
+            e = e || window.event;
+            if (e.keyCode == 37) dir = "left";
+            else if (e.keyCode == 38) dir = "up";
+            else if (e.keyCode == 39) dir = "right";
+            else if (e.keyCode == 40) dir = "down";
+        };
+
+        function startMove() {
+            clearInterval(timer);
+            dir = "right"; // شروع اولیه
+            timer = setInterval(moveDiv, 25);
+        }
+
+        function moveDiv() {
+            var div2 = document.getElementById("div2");
+            var div1 = document.getElementById("div1");
+
+            var snake_left = parseInt(getComputedStyle(div2).left);
+            var snake_top = parseInt(getComputedStyle(div2).top);
+            var canvas_w = parseInt(getComputedStyle(div1).width);
+            var canvas_h = parseInt(getComputedStyle(div1).height);
+            var snake_w = parseInt(getComputedStyle(div2).width);
+            var step = 5;
+
+              // بررسی برخورد با دیوار
+            if (
+                (dir == "up" && snake_top - step < 0) ||
+                (dir == "down" && snake_top + step > canvas_h - snake_w) ||
+                (dir == "left" && snake_left - step < 0) ||
+                (dir == "right" && snake_left + step > canvas_w - snake_w)
+            ) {
+                clearInterval(timer);
+                alert("باختی!");
+                return;
+            }
+
+            if (dir == "up" && snake_top - step >= 0) {
+                div2.style.top = (snake_top - step) + "px";
+            } else if (dir == "down" && snake_top + step <= canvas_h - snake_w) {
+                div2.style.top = (snake_top + step) + "px";
+            } else if (dir == "left" && snake_left - step >= 0) {
+                div2.style.left = (snake_left - step) + "px";
+            } else if (dir == "right" && snake_left + step <= canvas_w - snake_w) {
+                div2.style.left = (snake_left + step) + "px";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
