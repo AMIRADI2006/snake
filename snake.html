@@ -137,6 +137,7 @@
                     }
                 }
 
+                // اگر بنویسی cloneNode(true) یعنی هم خود المان و هم تمام بچه‌های داخلش (مثل bomb-fitile و bomb_text) کپی می‌شن.
                 const bomb = bombTemplate.cloneNode(true);
                 bomb.style.display = "block";
                 bomb.style.position = "absolute";
@@ -144,6 +145,7 @@
                 bomb.style.left = randomLeft + "px";
                 bomb.style.top = randomTop + "px";
 
+                // appendChild یک متد جاوااسکریپت برای اضافه کردن یک المان جدید به داخل یک المان والد (Parent) هست. یعنی وقتی یک div یا هر عنصر HTML جدید می‌سازی، با appendChild می‌تونی اون رو بذاری داخل یک عنصر دیگه.
                 div1.appendChild(bomb);
                 bombs.push(bomb);
             }
