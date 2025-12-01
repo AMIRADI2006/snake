@@ -10,6 +10,7 @@
 <body id="background">
 
     <div id="div1">
+        <!-- سر مار با چشم‌ها -->
         <div id="div2">
             <div class="div3">
                 <div class="div4"></div>
@@ -18,6 +19,7 @@
                 <div class="div4"></div>
             </div>
         </div>
+        <!-- غذا -->
         <div id="food">
             <div class="food-barg"></div>
         </div>
@@ -32,11 +34,15 @@
         var timer;
         var dir = "";
         var score = 0;
+        var snakeParts = []; // آرایه بدن مار
 
-        const div2 = document.getElementById("div2");
+        const div2 = document.getElementById("div2"); // سر مار
         const div1 = document.getElementById("div1");
         const food = document.getElementById("food");
         const scoreDisplay = document.getElementById("score");
+
+        // اضافه کردن سر مار به آرایه
+        snakeParts.push(div2);
 
         document.onkeydown = function (e) {
             e = e || window.event;
@@ -47,15 +53,28 @@
         };
 
         function startMove() {
-            clearInterval(timer);
-            dir = "right";
-            score = 0;
+            clearInterval(timer); // پاک کردن تایمر قبلی
+            dir = "right";        // جهت اولیه
+            score = 0;            // امتیاز صفر
             scoreDisplay.innerText = "امتیاز: " + score;
+
+            // پاک کردن همه‌ی بخش‌های بدن قبلی
+            snakeParts.forEach(part => {
+                if (part !== div2) {
+                    part.remove();
+                }
+            });
+            // ریست کردن سر مار
             div2.style.left = "0px";
             div2.style.top = "0px";
+
+            // آرایه بدن فقط شامل سر مار باشه
+            snakeParts = [div2];
+
             placeFood();
             timer = setInterval(moveDiv, 30);
         }
+
 
         function placeFood() {
             const canvas_w = parseInt(getComputedStyle(div1).width);
@@ -64,23 +83,23 @@
 
             const maxLeft = canvas_w - foodSize;
             const maxTop = canvas_h - foodSize;
-            //ببینیم چندتا غذا داخل صحفه جا می شه --> (maxLeft / 30)
-            //یک عدد تصادفی بین صفر تا تعداد غذا هایی که جا می شه --> (Math.random() * (maxLeft / 30))
-            //در نهایت ضرب در 30 باعث می شه موقیت غذا در صفحه به دست بیاد
-            const randomLeft = Math.floor(Math.random() * (maxLeft / 30)) * 30;
-            const randomTop = Math.floor(Math.random() * (maxTop / 30)) * 30;
+
+            // غذا روی شبکه‌ی 5px قرار می‌گیرد
+            const randomLeft = Math.floor(Math.random() * (maxLeft / 5)) * 5;
+            const randomTop = Math.floor(Math.random() * (maxTop / 5)) * 5;
 
             food.style.left = randomLeft + "px";
             food.style.top = randomTop + "px";
         }
 
         function moveDiv() {
-            const snake_left = parseInt(getComputedStyle(div2).left);
-            const snake_top = parseInt(getComputedStyle(div2).top);
+            const head = snakeParts[0];
+            const snake_left = parseInt(getComputedStyle(head).left);
+            const snake_top = parseInt(getComputedStyle(head).top);
             const canvas_w = parseInt(getComputedStyle(div1).width);
             const canvas_h = parseInt(getComputedStyle(div1).height);
-            const snake_w = parseInt(getComputedStyle(div2).width);
-            var step = 5;
+            const snake_w = parseInt(getComputedStyle(head).width);
+            var step = 5; // حرکت نرم‌تر
 
             // برخورد با دیوار
             if (
@@ -95,23 +114,29 @@
                 return;
             }
 
-            // حرکت مار
-            if (dir == "up") {
-                div2.style.top = (snake_top - step) + "px";
-            } else if (dir == "down") {
-                div2.style.top = (snake_top + step) + "px";
-            } else if (dir == "left") {
-                div2.style.left = (snake_left - step) + "px";
-            } else if (dir == "right") {
-                div2.style.left = (snake_left + step) + "px";
+            // حرکت بدن: هر بخش جای قبلی بخش قبل رو می‌گیره
+            for (let i = snakeParts.length - 1; i > 0; i--) {
+                snakeParts[i].style.left = snakeParts[i - 1].style.left;
+                snakeParts[i].style.top = snakeParts[i - 1].style.top;
             }
 
-            // بررسی برخورد با غذا
+            // حرکت سر
+            if (dir == "up") {
+                head.style.top = (snake_top - step) + "px";
+            } else if (dir == "down") {
+                head.style.top = (snake_top + step) + "px";
+            } else if (dir == "left") {
+                head.style.left = (snake_left - step) + "px";
+            } else if (dir == "right") {
+                head.style.left = (snake_left + step) + "px";
+            }
+
             const food_left = parseInt(getComputedStyle(food).left);
             const food_top = parseInt(getComputedStyle(food).top);
             const food_w = parseInt(getComputedStyle(food).width);
             const food_h = parseInt(getComputedStyle(food).height);
 
+            // بررسی برخورد با غذا
             if (
                 snake_left < food_left + food_w &&
                 snake_left + snake_w > food_left &&
@@ -122,22 +147,41 @@
                 scoreDisplay.innerText = "امتیاز: " + score;
                 placeFood();
 
+                // اضافه کردن بخش جدید به بدن مار
+                const newPart = document.createElement("div");
+                newPart.style.width = "30px";
+                newPart.style.height = "30px";
+                newPart.style.backgroundColor = "#FF9800";
+                newPart.style.position = "absolute";
+                newPart.style.borderRadius = "8px";
+                newPart.style.border = "1px solid #FFFF00";
+                newPart.style.zIndex = "4";
+
+                // قرار گرفتن بخش جدید در جای آخرین بخش بدن
+                const last = snakeParts[snakeParts.length - 1];
+                newPart.style.left = last.style.left;
+                newPart.style.top = last.style.top;
+
+
+                // appendChild یک متد جاوااسکریپت برای اضافه کردن یک المان جدید به داخل یک المان والد (Parent) هست. یعنی وقتی یک div یا هر عنصر HTML جدید می‌سازی، با appendChild می‌تونی اون رو بذاری داخل یک عنصر دیگه.
+                div1.appendChild(newPart);
+                snakeParts.push(newPart);
+
                 // افزایش سرعت
                 if (score === 2) {
-                    changeSpeed(20, "#FF7043"); 
+                    changeSpeed(25, "#FF7043");
                 } else if (score === 5) {
-                    changeSpeed(15, "#E91E63"); 
+                    changeSpeed(20, "#E91E63");
                 } else if (score === 8) {
-                    changeSpeed(10, "#880E4F");
+                    changeSpeed(15, "#880E4F");
                 }
             }
         }
 
         function changeSpeed(newSpeed, newColor) {
             clearInterval(timer);
-            speed = newSpeed;
             background.style.background = newColor;
-            timer = setInterval(moveDiv, speed);
+            timer = setInterval(moveDiv, newSpeed);
         }
 
     </script>

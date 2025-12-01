@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>مار بازی با غذا</title>
+    <link rel="stylesheet" href="src/styles/app.css">
+</head>
+
+<body id="background">
+
+    <div id="div1">
+        <div id="div2">
+            <div class="div3">
+                <div class="div4"></div>
+            </div>
+            <div class="div3">
+                <div class="div4"></div>
+            </div>
+        </div>
+        <div id="food">
+            <div class="food-barg"></div>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <button class="btnrun" onclick="startMove()">شروع</button>
+        <span id="score">امتیاز: 0</span>
+    </div>
+
+    <script>
+        var timer;
+        var dir = "";
+        var score = 0;
+
+        const div2 = document.getElementById("div2");
+        const div1 = document.getElementById("div1");
+        const food = document.getElementById("food");
+        const scoreDisplay = document.getElementById("score");
+
+        document.onkeydown = function (e) {
+            e = e || window.event;
+            if (e.keyCode == 37) dir = "left";
+            else if (e.keyCode == 38) dir = "up";
+            else if (e.keyCode == 39) dir = "right";
+            else if (e.keyCode == 40) dir = "down";
+        };
+
+        function startMove() {
+            clearInterval(timer);
+            dir = "right";
+            score = 0;
+            scoreDisplay.innerText = "امتیاز: " + score;
+            div2.style.left = "0px";
+            div2.style.top = "0px";
+            placeFood();
+            timer = setInterval(moveDiv, 30);
+        }
+
+        function placeFood() {
+            const canvas_w = parseInt(getComputedStyle(div1).width);
+            const canvas_h = parseInt(getComputedStyle(div1).height);
+            const foodSize = parseInt(getComputedStyle(food).width);
+
+            const maxLeft = canvas_w - foodSize;
+            const maxTop = canvas_h - foodSize;
+            //ببینیم چندتا غذا داخل صحفه جا می شه --> (maxLeft / 30)
+            //یک عدد تصادفی بین صفر تا تعداد غذا هایی که جا می شه --> (Math.random() * (maxLeft / 30))
+            //در نهایت ضرب در 30 باعث می شه موقیت غذا در صفحه به دست بیاد
+            const randomLeft = Math.floor(Math.random() * (maxLeft / 30)) * 30;
+            const randomTop = Math.floor(Math.random() * (maxTop / 30)) * 30;
+
+            food.style.left = randomLeft + "px";
+            food.style.top = randomTop + "px";
+        }
+
+        function moveDiv() {
+            const snake_left = parseInt(getComputedStyle(div2).left);
+            const snake_top = parseInt(getComputedStyle(div2).top);
+            const canvas_w = parseInt(getComputedStyle(div1).width);
+            const canvas_h = parseInt(getComputedStyle(div1).height);
+            const snake_w = parseInt(getComputedStyle(div2).width);
+            var step = 5;
+
+            // برخورد با دیوار
+            if (
+                (dir == "up" && snake_top - step < 0) ||
+                (dir == "down" && snake_top + step > canvas_h - snake_w) ||
+                (dir == "left" && snake_left - step < 0) ||
+                (dir == "right" && snake_left + step > canvas_w - snake_w)
+            ) {
+                background.style.background = "#fff";
+                clearInterval(timer);
+
+                // ریست کردن اندازه سر مار به حالت اولیه
+                div2.style.width = "30px";
+                div2.style.height = "30px";
+
+                alert("باختی!");
+                return;
+            }
+
+            // حرکت مار
+            if (dir == "up") {
+                div2.style.top = (snake_top - step) + "px";
+            } else if (dir == "down") {
+                div2.style.top = (snake_top + step) + "px";
+            } else if (dir == "left") {
+                div2.style.left = (snake_left - step) + "px";
+            } else if (dir == "right") {
+                div2.style.left = (snake_left + step) + "px";
+            }
+
+
+            const food_left = parseInt(getComputedStyle(food).left);
+            const food_top = parseInt(getComputedStyle(food).top);
+            const food_w = parseInt(getComputedStyle(food).width);
+            const food_h = parseInt(getComputedStyle(food).height);
+            // بررسی برخورد با غذا
+            if (
+                snake_left < food_left + food_w &&
+                snake_left + snake_w > food_left &&
+                snake_top < food_top + food_h &&
+                snake_top + snake_w > food_top
+            ) {
+                score++;
+                scoreDisplay.innerText = "امتیاز: " + score;
+                placeFood();
+
+
+                // بزرگ کردن مار (افزایش اندازه سر مار)
+                const growBy = 5; // هر بار 5px بزرگ‌تر
+                const newSize = snake_w + growBy;
+                div2.style.width = newSize + "px";
+                div2.style.height = newSize + "px";
+
+                // اگر بعد از بزرگ شدن از محدوده بیرون زد، موقعیت را اصلاح کن
+                const canvas_w = parseInt(getComputedStyle(div1).width);
+                const canvas_h = parseInt(getComputedStyle(div1).height);
+
+                const newLeftMax = canvas_w - newSize;
+                const newTopMax = canvas_h - newSize;
+
+                let currentLeft = parseInt(getComputedStyle(div2).left);
+                let currentTop = parseInt(getComputedStyle(div2).top);
+
+                if (currentLeft > newLeftMax) {
+                    div2.style.left = newLeftMax + "px";
+                }
+                if (currentTop > newTopMax) {
+                    div2.style.top = newTopMax + "px";
+                }
+
+                // افزایش سرعت
+                if (score === 2) {
+                    changeSpeed(20, "#FF7043");
+                } else if (score === 5) {
+                    changeSpeed(15, "#E91E63");
+                } else if (score === 8) {
+                    changeSpeed(10, "#880E4F");
+                }
+            }
+        }
+
+        function changeSpeed(newSpeed, newColor) {
+            clearInterval(timer);
+            speed = newSpeed;
+            background.style.background = newColor;
+            timer = setInterval(moveDiv, speed);
+        }
+
+    </script>
+
+</body>
+
+</html>

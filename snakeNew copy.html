@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>مار بازی با غذا و بمب</title>
+    <link rel="stylesheet" href="src/styles/app.css">
+</head>
+
+<body id="background">
+
+    <div id="div1">
+        <!-- سر مار با چشم‌ها -->
+        <div id="div2">
+            <div class="div3">
+                <div class="div4"></div>
+            </div>
+            <div class="div3">
+                <div class="div4"></div>
+            </div>
+        </div>
+        <!-- غذا -->
+        <div id="food">
+            <div class="food-barg"></div>
+        </div>
+
+        <!-- بمب قالب -->
+        <div id="bomb">
+            <div class="bomb-fitile"></div>
+            <div class="bomb_text">TNT</div>
+        </div>
+
+    </div>
+
+    <div class="wrapper">
+        <button class="btnrun" onclick="startMove()">شروع</button>
+        <span id="score">امتیاز: 0</span>
+    </div>
+
+    <script>
+        var timer;
+        var dir = "";
+        var score = 0;
+        var snakeParts = [];
+        var bombs = [];
+
+        const div2 = document.getElementById("div2");
+        const div1 = document.getElementById("div1");
+        const food = document.getElementById("food");
+        const scoreDisplay = document.getElementById("score");
+        const bombTemplate = document.getElementById("bomb");
+        bombTemplate.style.display = "none"; // قالب مخفی
+
+        snakeParts.push(div2);
+
+        document.onkeydown = function (e) {
+            e = e || window.event;
+            if (e.keyCode == 37) dir = "left";
+            else if (e.keyCode == 38) dir = "up";
+            else if (e.keyCode == 39) dir = "right";
+            else if (e.keyCode == 40) dir = "down";
+        };
+
+        function startMove() {
+            clearInterval(timer);
+            dir = "right";
+            score = 0;
+            scoreDisplay.innerText = "امتیاز: " + score;
+
+            snakeParts.forEach(part => {
+                if (part !== div2) part.remove();
+            });
+            snakeParts = [div2];
+
+            div2.style.left = "0px";
+            div2.style.top = "0px";
+
+            bombs.forEach(bomb => bomb.remove());
+            bombs = [];
+
+            placeFood();
+            timer = setInterval(moveDiv, 30);
+        }
+
+        // بررسی هم‌پوشانی
+        function isOverlap(x1, y1, x2, y2, size) {
+            return !(x1 + size <= x2 || x1 >= x2 + size || y1 + size <= y2 || y1 >= y2 + size);
+        }
+
+        function placeFood() {
+            const canvas_w = parseInt(getComputedStyle(div1).width);
+            const canvas_h = parseInt(getComputedStyle(div1).height);
+            const foodSize = parseInt(getComputedStyle(food).width);
+
+            let valid = false, randomLeft, randomTop;
+            while (!valid) {
+                randomLeft = Math.floor(Math.random() * ((canvas_w - foodSize) / 5)) * 5;
+                randomTop = Math.floor(Math.random() * ((canvas_h - foodSize) / 5)) * 5;
+
+                valid = true;
+                for (let b of bombs) {
+                    if (isOverlap(randomLeft, randomTop, parseInt(b.style.left), parseInt(b.style.top), foodSize)) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+
+            food.style.left = randomLeft + "px";
+            food.style.top = randomTop + "px";
+        }
+
+        function placeBombs(count) {
+            bombs.forEach(bomb => bomb.remove());
+            bombs = [];
+
+            const canvas_w = parseInt(getComputedStyle(div1).width);
+            const canvas_h = parseInt(getComputedStyle(div1).height);
+            const bombSize = 30;
+
+            for (let i = 0; i < count; i++) {
+                let valid = false, randomLeft, randomTop;
+                while (!valid) {
+                    randomLeft = Math.floor(Math.random() * ((canvas_w - bombSize) / 5)) * 5;
+                    randomTop = Math.floor(Math.random() * ((canvas_h - bombSize) / 5)) * 5;
+
+                    valid = true;
+                    for (let b of bombs) {
+                        if (isOverlap(randomLeft, randomTop, parseInt(b.style.left), parseInt(b.style.top), bombSize)) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                    // بررسی هم‌پوشانی با غذا
+                    if (isOverlap(randomLeft, randomTop, parseInt(food.style.left), parseInt(food.style.top), bombSize)) {
+                        valid = false;
+                    }
+                }
+
+                const bomb = bombTemplate.cloneNode(true);
+                bomb.style.display = "block";
+                bomb.style.position = "absolute";
+                bomb.style.zIndex = "4";
+                bomb.style.left = randomLeft + "px";
+                bomb.style.top = randomTop + "px";
+
+                div1.appendChild(bomb);
+                bombs.push(bomb);
+            }
+        }
+
+        function moveDiv() {
+            const head = snakeParts[0];
+            const snake_left = parseInt(getComputedStyle(head).left);
+            const snake_top = parseInt(getComputedStyle(head).top);
+            const canvas_w = parseInt(getComputedStyle(div1).width);
+            const canvas_h = parseInt(getComputedStyle(div1).height);
+            const snake_w = parseInt(getComputedStyle(head).width);
+            var step = 5;
+
+            if (
+                (dir == "up" && snake_top - step < 0) ||
+                (dir == "down" && snake_top + step > canvas_h - snake_w) ||
+                (dir == "left" && snake_left - step < 0) ||
+                (dir == "right" && snake_left + step > canvas_w - snake_w)
+            ) {
+                background.style.background = "#fff";
+                clearInterval(timer);
+                alert("باختی!");
+                return;
+            }
+
+            for (let i = snakeParts.length - 1; i > 0; i--) {
+                snakeParts[i].style.left = snakeParts[i - 1].style.left;
+                snakeParts[i].style.top = snakeParts[i - 1].style.top;
+            }
+
+            if (dir == "up") head.style.top = (snake_top - step) + "px";
+            else if (dir == "down") head.style.top = (snake_top + step) + "px";
+            else if (dir == "left") head.style.left = (snake_left - step) + "px";
+            else if (dir == "right") head.style.left = (snake_left + step) + "px";
+
+            const food_left = parseInt(getComputedStyle(food).left);
+            const food_top = parseInt(getComputedStyle(food).top);
+            const food_w = parseInt(getComputedStyle(food).width);
+            const food_h = parseInt(getComputedStyle(food).height);
+
+            if (
+                snake_left < food_left + food_w &&
+                snake_left + snake_w > food_left &&
+                snake_top < food_top + food_h &&
+                snake_top + snake_w > food_top
+            ) {
+                score++;
+                scoreDisplay.innerText = "امتیاز: " + score;
+                placeFood();
+
+                const newPart = document.createElement("div");
+                newPart.style.width = "30px";
+                newPart.style.height = "30px";
+                newPart.style.backgroundColor = "#FF9800";
+                newPart.style.position = "absolute";
+                newPart.style.borderRadius = "8px";
+                newPart.style.border = "1px solid #FFFF00";
+                newPart.style.zIndex = "4";
+
+                const last = snakeParts[snakeParts.length - 1];
+                newPart.style.left = last.style.left;
+                newPart.style.top = last.style.top;
+
+                div1.appendChild(newPart);
+                snakeParts.push(newPart);
+
+                if (score === 2) {
+                    changeSpeed(25, "#FF7043");
+                    placeBombs(1);
+                } else if (score === 5) {
+                    changeSpeed(20, "#E91E63");
+                    placeBombs(2);
+                } else if (score === 8) {
+                    changeSpeed(15, "#880E4F");
+                    placeBombs(3);
+                }
+            }
+
+            for (let bomb of bombs) {
+                const bomb_left = parseInt(bomb.style.left);
+                const bomb_top = parseInt(bomb.style.top);
+                const bomb_w = parseInt(getComputedStyle(bomb).width);
+                const bomb_h = parseInt(getComputedStyle(bomb).height);
+
+                if (
+                    snake_left < bomb_left + bomb_w &&
+                    snake_left + snake_w > bomb_left &&
+                    snake_top < bomb_top + bomb_h &&
+                    snake_top + snake_w > bomb_top
+                ) {
+                    background.style.background = "#fff";
+                    clearInterval(timer);
+                    alert("به بمب خوردی! باختی!");
+                    return;
+                }
+            }
+        }
+
+        function changeSpeed(newSpeed, newColor) {
+            clearInterval(timer);
+            background.style.background = newColor;
+            timer = setInterval(moveDiv, newSpeed);
+        }
+
+    </script>
+
+</body>
+
+</html>
